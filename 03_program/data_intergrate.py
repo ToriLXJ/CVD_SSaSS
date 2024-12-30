@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 from itertools import product
@@ -70,6 +69,7 @@ def calculate_all_variables(data_pivot, data_t, population, years, genders, stra
                     't_stroke_event_annual', 't_IS_event_annual', 't_HS_event_annual', 't_US_event_annual',
                     't_stroke_death_annual', 't_IS_death_annual', 't_HS_death_annual', 't_US_death_annual',
                     't_chd_event_annual', 't_chd_death_annual', 't_noncvd_death_annual', 't_Cost_annual', 't_QALY_annual']
+    
     def get_values(year, gender, variable, strategy):
         if (year, gender, variable, strategy) not in cache:
             cache[(year, gender, variable, strategy)] = calculate_variable(data_t, population, year, gender, variable, strategy)
@@ -82,11 +82,9 @@ def calculate_all_variables(data_pivot, data_t, population, years, genders, stra
         base_mean, base_ci_lower, base_ci_upper = get_values(year, gender, variable, 'Base')
         intervention_mean, intervention_ci_lower, intervention_ci_upper = get_values(year, gender, variable, 'Intervention')
 
-
         mean_diff = intervention_mean - base_mean
         ci_lower_diff = intervention_ci_lower - base_ci_lower
         ci_upper_diff = intervention_ci_upper - base_ci_upper
-
 
         change_mean = abs(mean_diff) if flag_abs else mean_diff
 
@@ -103,8 +101,8 @@ def calculate_all_variables(data_pivot, data_t, population, years, genders, stra
                 change_ci_lower = abs(ci_lower_diff)
                 change_ci_upper = abs(ci_upper_diff)
             else:
-                change_ci_lower = ci_lower_diff
-                change_ci_upper = ci_upper_diff
+                change_ci_lower = min(ci_lower_diff, ci_upper_diff)
+                change_ci_upper = max(ci_lower_diff, ci_upper_diff)
 
         if flag_format:
             base_val_converted, intervention_val_converted, base_unit, intervention_unit = convert_to_same_unit(base_mean, intervention_mean)
@@ -180,4 +178,3 @@ def calculate_all_variables(data_pivot, data_t, population, years, genders, stra
             })
 
     return pd.DataFrame(results), pd.DataFrame(df_plot_data)
-
