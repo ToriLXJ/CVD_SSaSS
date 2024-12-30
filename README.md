@@ -1,2 +1,2 @@
-This is the data analysis of CVD model. 
-run.ipynb is all your need.
+This is the data analysis for the CVD model. 
+run.ipynb is all you need.
