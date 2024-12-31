@@ -29,6 +29,21 @@ def plot_data(ax, gender, variable, strategy, data_t, population,
     
     return line, None
 
+def sort_key(label):
+    if 'Intervention' in label:
+        if 'ischemic' in label:
+            return (0, label)
+        else:
+            return (1, label)
+    elif 'Base' in label:
+        if 'ischemic' in label:
+            return (2, label)
+        else:
+            return (3, label)
+    else:
+        return (4, label)
+
+
 def create_summary_plot(data_t, population, colors, markers, linestyles, pdf_path):
     plt.rcParams['font.family'] = 'Times New Roman'
     plt.rcParams['font.size'] = 18
@@ -117,12 +132,10 @@ def create_summary_plot(data_t, population, colors, markers, linestyles, pdf_pat
             label_index += 1
 
             if j == 2:
-                sorted_handles_labels = sorted(zip(legend_handles, legend_labels), 
-                                   key=lambda x: (('Intervention' not in x[1], x[1]), ('ischemic' not in x[1], x[1])))
+                sorted_handles_labels = sorted(zip(legend_handles, legend_labels), key=lambda x: sort_key(x[1]))
                 sorted_handles, sorted_labels = zip(*sorted_handles_labels)
                 ax.legend(sorted_handles, sorted_labels, loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
 
     plt.tight_layout()
     plt.savefig(pdf_path, format='pdf')
     plt.show()
-
